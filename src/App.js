@@ -8,35 +8,9 @@ import Logo from './components/Logo/Logo';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import Rank from './components/Rank/Rank';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
+import Signin from './components/Signin/Signin';
+import { app, particlesParams } from './constants/clarifai';
 
-
-const app = new Clarifai.App({
-  apiKey: 'f11e601129dc41af9444063232a81248'
-});
-
-const particlesParams = {
-  particles: {
-    line_linked: {
-      shadow: {
-        enable: true,
-        color: "#3CA9D1",
-        blur: 5
-      },
-      distance: 130
-    },
-    number: {
-      value: 120,
-      density: {
-        enable: true,
-        value_area: 800
-      }
-    },
-    move: {
-      enable: true,
-      speed: 5
-    }
-  }
-};
 
 class App extends Component {
   constructor() {
@@ -45,6 +19,7 @@ class App extends Component {
       input: '',
       imageUrl: '',
       box: {},
+      route: 'signin'
     }
   }
 
@@ -85,6 +60,10 @@ class App extends Component {
         })
   }
 
+  onRouteChange = (route) => {
+    this.setState({ route });
+  }
+
   render() {
     return (
       <div className="App">
@@ -92,14 +71,21 @@ class App extends Component {
           className="particles"
           params={particlesParams}
         />
-        <Navigation />
+        <Navigation onRouteChange={this.onRouteChange} />
         <Logo />
-        <Rank />
-        <ImageLinkForm
-          onButtonSubmit={this.onButtonSubmit}
-          onInputChange={this.onInputChange}
-        />
-        <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl} />
+        { this.state.route === 'signin' ? (
+            <Signin onRouteChange={this.onRouteChange} />
+          ) : (
+            <div>
+              <Rank />
+              <ImageLinkForm
+                onButtonSubmit={this.onButtonSubmit}
+                onInputChange={this.onInputChange}
+              />
+              <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl} />
+            </div>
+          )
+        }
       </div>
     );
   }
