@@ -18,19 +18,18 @@ app.get('/', (req, res) => {
 app.post('/signin', (req, res) => {
   if (req.body.email === db.users[0].email &&
       req.body.password === db.users[0].password) {
-    res.json('success');
+    res.json(db.users[0]);
   } else {
     res.status(400).json('username or password incorrect');
   }
 });
 
 app.post('/register', (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email } = req.body;
   db.users.push({
     id: (db.users.length + 1).toString(),
     name,
     email,
-    password,
     entries: 0,
     createdAt: new Date()
   });

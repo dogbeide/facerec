@@ -21,8 +21,19 @@ class App extends Component {
       imageUrl: '',
       box: {},
       route: 'signin',
-      isSignedIn: false
+      isSignedIn: false,
+      user: {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined: undefined
+      }
     }
+  }
+
+  loadUser = (user) => {
+    this.setState({ user });
   }
 
   calcFaceLoc = (data) => {
@@ -80,12 +91,19 @@ class App extends Component {
     switch(route) {
       case 'signin':
         return (
-          <Signin onRouteChange={this.onRouteChange} />
+          <Signin
+            loadUser={this.loadUser}
+            onRouteChange={this.onRouteChange}
+          />
         )
       case 'home':
+        const { name, entries } = this.state.user;
         return (
           <div>
-            <Rank />
+            <Rank
+              name={name}
+              entries={entries}
+            />
             <ImageLinkForm
               onButtonSubmit={this.onButtonSubmit}
               onInputChange={this.onInputChange}
@@ -95,12 +113,18 @@ class App extends Component {
         )
       case 'register':
         return (
-          <Register onRouteChange={this.onRouteChange} />
+          <Register
+            loadUser={this.loadUser}
+            onRouteChange={this.onRouteChange}
+          />
         )
-      default:
-        return (
-          <Signin onRouteChange={this.onRouteChange} />
+      default:return (
+          <Signin
+            loadUser={this.loadUser}
+            onRouteChange={this.onRouteChange}
+          />
         )
+        
     }
   }
 
