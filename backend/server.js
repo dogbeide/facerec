@@ -1,31 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt-nodejs');
+const cors = require('cors');
+const { db } = require('./db');
 
 
+const port = process.env.PORT || 3000;
 const app = express();
 
-const db = {
-  users: [
-    {
-      id: '1',
-      name: 'Jon',
-      email: 'joncagley@gmail.com',
-      password: 'lavaguns',
-      entries: 0,
-      createdAt: new Date()
-    },
-    {
-      id: '2',
-      name: 'Chirag',
-      email: 'chiraggupta@gmail.com',
-      password: 'brother',
-      entries: 0,
-      createdAt: new Date()
-    },
-  ]
-}
-
 app.use(bodyParser.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send(db.users)
@@ -82,8 +66,8 @@ app.post('/image', (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('server is running on port 3000');
+app.listen(port, () => {
+  console.log(`server is running on port ${port}`);
 })
 
 /*
