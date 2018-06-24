@@ -43,7 +43,7 @@ app.post('/signin', (req, res) => {
 app.post('/register', (req, res) => {
   const { name, email, password } = req.body;
   db.users.push({
-    id: db.users.length + 1,
+    id: (db.users.length + 1).toString(),
     name,
     email,
     password,
@@ -51,6 +51,35 @@ app.post('/register', (req, res) => {
     createdAt: new Date()
   });
   res.json(db.users[db.users.length-1]);
+});
+
+app.get('/profile/:id', (req, res) => {
+  const { id } = req.params;
+  let found = false;
+  db.users.forEach(user => {
+    if (user.id === id) {
+      res.json(user);
+      found = true;
+    }
+  });
+  if (!found) {
+    res.status(404).json('user not found');
+  }
+});
+
+app.post('/image', (req, res) => {
+  const { id } = req.body;
+  let found = false;
+  db.users.forEach(user => {
+    if (user.id === id) {
+      user.entries++;
+      res.json(user.entries);
+      found = true;
+    }
+  });
+  if (!found) {
+    res.status(404).json('user not found');
+  }
 });
 
 app.listen(3000, () => {
