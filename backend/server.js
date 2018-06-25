@@ -2,8 +2,22 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
-const { db } = require('./db');
+const knex = require('knex');
+const { dbFake } = require('./db');
 
+const db = knex({
+  client: 'pg',
+  connection: {
+    host : '127.0.0.1',
+    user : '',
+    password : '',
+    database : 'facerec'
+  }
+});
+
+db.select('*').from('users').then(data => {
+  console.log(data);
+})
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -12,13 +26,13 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.get('/', (req, res) => {
-  res.send(db.users)
+  res.send(dbFake.users)
 });
 
 app.post('/signin', (req, res) => {
-  if (req.body.email === db.users[0].email &&
-      req.body.password === db.users[0].password) {
-    res.json(db.users[0]);
+  if (req.body.email === dbFake.users[0].email &&
+      req.body.password === dbFake.users[0].password) {
+    res.json(dbFake.users[0]);
   } else {
     res.status(400).json('username or password incorrect');
   }
@@ -26,20 +40,24 @@ app.post('/signin', (req, res) => {
 
 app.post('/register', (req, res) => {
   const { name, email } = req.body;
-  db.users.push({
-    id: (db.users.length + 1).toString(),
-    name,
-    email,
-    entries: 0,
-    createdAt: new Date()
-  });
-  res.json(db.users[db.users.length-1]);
+  db('users')
+    .returning('*')
+    .insert({
+      email,
+      name,
+      createdat: new Date()
+    })
+    .then(results => {
+      res.json(results[0]);
+    })
+    .catch(err => res.status(400).json('failed to register'))
+
 });
 
 app.get('/profile/:id', (req, res) => {
   const { id } = req.params;
   let found = false;
-  db.users.forEach(user => {
+  dbFake.users.forEach(user => {
     if (user.id === id) {
       res.json(user);
       found = true;
@@ -53,7 +71,7 @@ app.get('/profile/:id', (req, res) => {
 app.put('/image', (req, res) => {
   const { id } = req.body;
   let found = false;
-  db.users.forEach(user => {
+  dbFake.users.forEach(user => {
     if (user.id === id) {
       user.entries++;
       res.json(user.entries);
