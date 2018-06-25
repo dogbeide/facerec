@@ -41,7 +41,6 @@ class App extends Component {
     const image = document.getElementById('image');
     const width = Number(image.width);
     const height = Number(image.height);
-    console.log(width, height);
     return {
       leftCol: foundFace.left_col * width,
       topRow: foundFace.top_row * height,
@@ -51,7 +50,6 @@ class App extends Component {
   }
 
   displayFaceBox = (box) => {
-    console.log(box);
     this.setState({ box });
   }
 
