@@ -35,18 +35,32 @@ app.post('/signin', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  const { name, email } = req.body;
-  db('users')
-    .returning('*')
-    .insert({
-      email,
+  const { name, email, password } = req.body;
+  const hash = bcrypt.hashSync(password);
+  db.transaction(trx => {
+    trx.insert({
       name,
+      email,
       createdat: new Date()
     })
-    .then(results => {
-      res.json(results[0]);
+    .into('users')
+    .returning('*')
+    .then(users => {
+      return trx('login')
+        .returning('*')
+        .insert({
+          email: users[0].email,
+          hash
+        })
+        .then(logins => {
+          res.json(users[0]);
+        })
     })
-    .catch(err => res.status(400).json('failed to register'))
+    .then(trx.commit)
+    .catch(trx.rollback)
+  })
+  .catch(err => res.status(400).json(err))
+  
 
 });
 
