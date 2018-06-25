@@ -3,6 +3,11 @@ const { db } = require('../constants/db');
 
 const post = (req, res) => {
   const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return res.status(400).send({
+      msg: 'Please enter valid information'
+    });
+  }
   const hash = bcrypt.hashSync(password);
   db.transaction(trx => {
     trx.insert({
@@ -24,7 +29,10 @@ const post = (req, res) => {
         })
     })
     .then(trx.commit)
-    .catch(trx.rollback)
+    .catch(err => {
+      trx.rollback(err);
+      res.status(500).send({msg: 'Failed to register user'})
+    })
   })
   .catch(err => res.status(400).json(err));
 }

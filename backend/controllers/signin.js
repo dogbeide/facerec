@@ -15,11 +15,15 @@ const post = (req, res) => {
           .then(users => {
             res.json(users[0])
           })
-          .catch(err => res.status(500).json('error fetching user'))
+          .catch(err => res.status(500).json({
+            msg: 'Error fetching user'
+          }))
       }
       throw new Error;
     })
-    .catch(err => res.status(400).json('email or password incorrect'))
+    .catch(err => res.status(400).json({
+      msg: 'Email and/or password incorrect'
+    }))
 }
 
 module.exports = { post }

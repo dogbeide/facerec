@@ -7,10 +7,21 @@ class Register extends React.Component {
     this.state = {
       email: '',
       password: '',
-      name: ''
+      name: '',
+      error: undefined
     }
   }
 
+  displayError() {
+    if (this.state.error) {
+      return (
+        <div className="f6 red mt1">
+          {this.state.error}
+        </div>
+      )
+    }
+  }
+  
   onNameChange = (e) => {
     this.setState({ name: e.target.value })
   }
@@ -31,9 +42,11 @@ class Register extends React.Component {
     })
     .then(res => res.json())
     .then(user => {
-      if (user) {
+      if (user.id) {
         this.props.loadUser(user);
         this.props.onRouteChange('home');
+      } else {
+        this.setState({ error: user.msg })
       }
     })
     .catch(console.log)
@@ -46,6 +59,7 @@ class Register extends React.Component {
           <div className="measure">
             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
               <legend className="f2 fw6 ph0 mh0">Register</legend>
+              {this.displayError()}
               <div className="mt3">
                 <label className="db fw6 lh-copy f6" htmlFor="name">Name</label>
                 <input

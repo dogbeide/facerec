@@ -31,7 +31,7 @@ class Signin extends React.Component {
         this.props.loadUser(user);
         this.props.onRouteChange('home');
       } else {
-        this.setState({ error: true });
+        this.setState({ error: user.msg });
       }
     })
   }
@@ -40,7 +40,7 @@ class Signin extends React.Component {
     if (this.state.error) {
       return (
         <div className="f6 red mb1">
-          Email and/or password incorrect
+          {this.state.error}
         </div>
       )
     }
