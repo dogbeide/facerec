@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
 const knex = require('knex');
-const { dbFake } = require('./db');
 
 const db = knex({
   client: 'pg',
@@ -26,12 +25,23 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-  if (req.body.email === dbFake.users[0].email &&
-      req.body.password === dbFake.users[0].password) {
-    res.json(dbFake.users[0]);
-  } else {
-    res.status(400).json('username or password incorrect');
-  }
+  const { email, password } = req.body;
+  db.select('email', 'hash').from('login')
+    .where({ email })
+    .then(logins => {
+      const isAuthenticated = bcrypt.compareSync(password, logins[0].hash);
+      if (isAuthenticated) {
+        return db('users')
+          .select('*')
+          .where({ email })
+          .then(users => {
+            res.json(users[0])
+          })
+          .catch(err => res.status(500).json('error fetching user'))
+      }
+      throw new Error;
+    })
+    .catch(err => res.status(400).json('email or password incorrect'))
 });
 
 app.post('/register', (req, res) => {
@@ -60,8 +70,6 @@ app.post('/register', (req, res) => {
     .catch(trx.rollback)
   })
   .catch(err => res.status(400).json(err))
-  
-
 });
 
 app.get('/profile/:id', (req, res) => {
@@ -89,7 +97,7 @@ app.put('/image', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 })
 
 /*
