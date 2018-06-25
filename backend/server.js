@@ -15,10 +15,6 @@ const db = knex({
   }
 });
 
-db.select('*').from('users').then(data => {
-  console.log(data);
-})
-
 const port = process.env.PORT || 3000;
 const app = express();
 
@@ -56,16 +52,14 @@ app.post('/register', (req, res) => {
 
 app.get('/profile/:id', (req, res) => {
   const { id } = req.params;
-  let found = false;
-  dbFake.users.forEach(user => {
-    if (user.id === id) {
-      res.json(user);
-      found = true;
+  db.select('*').from('users').where({ id }).then(users => {
+    if (users.length) {
+      res.json(users[0]);
+    } else {
+      res.status(400).json('user not found');
     }
-  });
-  if (!found) {
-    res.status(404).json('user not found');
-  }
+  })
+  .catch(err => res.status(400).json('error fetching user'));
 });
 
 app.put('/image', (req, res) => {
