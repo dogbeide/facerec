@@ -14,22 +14,25 @@ import { app, particlesParams } from './constants/clarifai';
 
 
 class App extends Component {
+
+  initialState = {
+    input: '',
+    imageUrl: '',
+    box: {},
+    route: 'signin',
+    isSignedIn: false,
+    user: {
+      id: '',
+      name: '',
+      email: '',
+      entries: 0,
+      joined: undefined
+    }
+  }
+
   constructor() {
     super();
-    this.state = {
-      input: '',
-      imageUrl: '',
-      box: {},
-      route: 'signin',
-      isSignedIn: false,
-      user: {
-        id: '',
-        name: '',
-        email: '',
-        entries: 0,
-        joined: undefined
-      }
-    }
+    this.state = Object.assign({}, this.initialState);
   }
 
   loadUser = (user) => {
@@ -78,6 +81,7 @@ class App extends Component {
                 { entries: count }
               ))
             })
+            .catch(console.log)
           }
           const box = this.calcFaceLoc(response);
           this.displayFaceBox(box);
@@ -91,10 +95,7 @@ class App extends Component {
     this.setState({ route });
 
     if (route === 'signout') {
-      this.setState({
-        isSignedIn: false,
-        route: 'signin'
-      });
+      this.setState(this.initialState);
     } else if (route === 'home') {
       this.setState({ isSignedIn: true });
     }
