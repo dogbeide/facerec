@@ -29,9 +29,9 @@ app.listen(port, () => {
 /*
 
 GET / --> home
-POST /signin --> success/fail {user}
+POST /signin --> {user}
 POST /register --> {user}
-GET /profile/:id --> entries
-PUT /image --> {user}
+GET /profile/:id --> {entries}
+POST /image --> {data, entries}
 
 */

@@ -3,17 +3,8 @@ const { db } = require('../constants/db');
 
 
 const app = new Clarifai.App({
-    apiKey: 'f11e601129dc41af9444063232a81248'
+  apiKey: 'f11e601129dc41af9444063232a81248'
 });
-
-const increaseEntries = (id) => {
-  db('users')
-    .where('id', '=', id)
-    .increment('entries', 1)
-    .returning('entries')
-    .then(entries => entries)
-    .catch(err => false)
-}
 
 const post = (req, res) => {
   const input = req.body.input;
@@ -29,11 +20,11 @@ const post = (req, res) => {
           data,
           entries
         }))
-        .catch(err => res.status(500).json({err: 'Failed to get entries'}))
+        .catch(err => res.status(500).json({ err: 'Failed to get entries' }))
     })
     .catch(err => {
       console.log(err);
-      res.status(400).json({err: 'Error using API'})
+      res.status(400).json({ err: 'Error using API' })
     })
 }
 
