@@ -13,9 +13,10 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-  res.status(200).send();
+  res.status(200).send('index.html');
 });
 app.post('/signin', signin.post);
 app.post('/register', register.post);
