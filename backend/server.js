@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 app.post('/signin', signin.post);
 app.post('/register', register.post);
 app.get('/profile/:id', profileId.get);
-app.put('/image', image.put);
+app.post('/image', image.post);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
