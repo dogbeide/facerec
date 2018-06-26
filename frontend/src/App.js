@@ -15,11 +15,11 @@ import { particlesParams } from './constants/particles';
 class App extends Component {
 
   initialState = {
-    input: '',
+    boxes: [],
     imageUrl: '',
-    box: {},
-    route: 'signin',
+    input: '',
     isSignedIn: false,
+    route: 'signin',
     user: {
       id: '',
       name: '',
@@ -38,21 +38,23 @@ class App extends Component {
     this.setState({ user });
   }
 
-  calcFaceLoc = (data) => {
-    const foundFace = data.outputs[0].data.regions[0].region_info.bounding_box;
+  calcBox = (faceRegion) => {
+    const vertices = faceRegion.region_info.bounding_box;
     const image = document.getElementById('image');
     const width = Number(image.width);
     const height = Number(image.height);
     return {
-      leftCol: foundFace.left_col * width,
-      topRow: foundFace.top_row * height,
-      rightCol: width - (foundFace.right_col * width),
-      bottomRow: height - (foundFace.bottom_row * height)
+      leftCol: vertices.left_col * width,
+      topRow: vertices.top_row * height,
+      rightCol: width - (vertices.right_col * width),
+      bottomRow: height - (vertices.bottom_row * height)
     }
   }
 
-  displayFaceBox = (box) => {
-    this.setState({ box });
+  displayFaceBoxes = (data) => {
+    const faceRegions = data.outputs[0].data.regions;
+    const boxes = faceRegions.map(faceRegion => this.calcBox(faceRegion));
+    this.setState({ boxes });
   }
 
   onInputChange = (e) => {
@@ -80,13 +82,8 @@ class App extends Component {
             ...this.state.user,
             entries: res.entries
           }
-          // user: Object.assign(
-          //   this.state.user,
-          //   { entries: res.entries }
-          // )
         })
-        const box = this.calcFaceLoc(res.data);
-        this.displayFaceBox(box);
+        this.displayFaceBoxes(res.data);
       })
       .catch(console.log)
   }
@@ -102,7 +99,7 @@ class App extends Component {
   }
 
   router = () => {
-    const { route, imageUrl, box } = this.state;
+    const { route } = this.state;
     switch (route) {
       case 'signin':
         return (
@@ -112,18 +109,18 @@ class App extends Component {
           />
         )
       case 'home':
-        const { name, entries } = this.state.user;
+        const { user, imageUrl, boxes } = this.state;
         return (
           <div>
             <Rank
-              name={name}
-              entries={entries}
+              name={user.name}
+              entries={user.entries}
             />
             <ImageLinkForm
               onPictureSubmit={this.onPictureSubmit}
               onInputChange={this.onInputChange}
             />
-            <FaceRecognition box={box} imageUrl={imageUrl} />
+            <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
           </div>
         )
       case 'register':
