@@ -8,7 +8,7 @@ const profileId = require('./controllers/profile-id');
 const image = require('./controllers/image');
 
 
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(bodyParser.json());
@@ -22,8 +22,8 @@ app.post('/register', register.post);
 app.get('/profile/:id', profileId.get);
 app.post('/image', image.post);
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 })
 
 /*
